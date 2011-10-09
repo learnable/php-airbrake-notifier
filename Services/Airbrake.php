@@ -303,8 +303,8 @@ class Services_Airbrake
 			if (isset($entry['class']) && $entry['class'] == get_class($this)) continue;
 
 			$line_node = $backtrace->addChild('line');
-			$line_node->addAttribute('file', $entry['file']);
-			$line_node->addAttribute('number', $entry['line']);
+			if($entry['file']) $line_node->addAttribute('file', $entry['file']);
+			if($entry['line']) $line_node->addAttribute('number', $entry['line']);
 			$line_node->addAttribute('method', $entry['function']);
 		}
 	}
