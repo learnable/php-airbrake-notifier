@@ -23,6 +23,7 @@ class Services_Airbrake
 	protected $file;
 	protected $line;
 	protected $trace;
+	protected static $blacklist = false;
 
 	/**
 	 * Report E_STRICT
@@ -61,6 +62,18 @@ class Services_Airbrake
 	{
 		$airbrake = new $class($apiKey, $environment, $client);
 		$airbrake->installNotifierHandlers();
+	}
+
+	/**
+	 * Adds a list of  parameters that should be
+	 * filtered before sending to Airbrake
+	 * @return array
+	 * @author Mal Curtis
+	 */
+
+	public static function setBlacklist($array)
+	{
+		self::$blacklist = $array;
 	}
 
 	/**
@@ -284,7 +297,28 @@ class Services_Airbrake
 	 * @author Scott Woods
 	 **/
 	function params() {
-		return $_REQUEST;
+		return $this->clean_params($_REQUEST);
+	}
+
+	/**
+	 * clean_params
+	 * Filters the $_REQUEST array for sensitive data
+	 * @return array
+	 * @author Mal Curtis
+	 **/
+	protected function clean_params($params)
+	{
+		if(!self::$blacklist) return $params;
+
+		foreach ($params as $key => $value) {
+			if(preg_match("/(" . implode(")|(", self::$blacklist) . ")/i", $key)) {
+				$params[$key] = '[FILTERED]';
+			}else if(is_array($value)){
+				$params[$key] = $this->clean_params($value);
+			}
+		}
+
+		return $params;
 	}
 
 	/**
@@ -303,9 +337,9 @@ class Services_Airbrake
 	 **/
 	function cgi_data() {
 		if (isset($_ENV) && !empty($_ENV)) {
-			return array_merge($_SERVER, $_ENV);
+			return $this->clean_params(array_merge($_SERVER, $_ENV));
 		}
-		return $_SERVER;
+		return $this->clean_params($_SERVER);
 	}
 
 	/**
