@@ -268,12 +268,26 @@ class Services_Airbrake
 
 		$node = $parent->addChild($key);
 		foreach ($source as $key => $val) {
-			$var_node = $node->addChild('var', $val);
+			$var_node = $node->addChild('var', $this->dumpVar($val));
 			$var_node->addAttribute('key', $key);
 		}
 	}
 
 	/**
+
+   * Make a string representation of an a variable of arbitrary type
+   * @return string
+	* @author Christian Rishoj Jensen
+	**/
+	function dumpVar($var)
+	{
+		if (is_array($var) || is_object($var))
+			$var = trim(preg_replace("/\n */", " ", print_r($var, true)));
+		return $var;
+	}
+
+  /**
+	 * 
 	 * Add a Airbrake backtrace to the XML
 	 * @return void
 	 * @author Rich Cavanaugh
