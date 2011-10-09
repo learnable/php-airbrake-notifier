@@ -52,6 +52,12 @@ class Services_Airbrake
 	public $environment;
 
 	/**
+	 * @vars object previous error handlers
+	 **/
+	protected $previous_error_handler;
+	protected $previous_exception_handler;
+
+	/**
 	 * Initialize the chosen notifier and install the error
 	 * and exception handlers that connect to Airbrake
 	 *
@@ -84,8 +90,8 @@ class Services_Airbrake
 	public function installNotifierHandlers()
 	{
 		register_shutdown_function(array($this, "fatalErrorHandler"));
-		set_error_handler(array($this, "errorHandler"));
-		set_exception_handler(array($this, "exceptionHandler"));		
+		$this->previous_error_handler = set_error_handler(array($this, "errorHandler"));
+		$this->previous_exception_handler = set_exception_handler(array($this, "exceptionHandler"));
 	}
 
 	/**
@@ -123,10 +129,10 @@ class Services_Airbrake
 	/**
 	 * Handle a php error
 	 *
-	 * @param string $code 
-	 * @param string $message 
-	 * @param string $file 
-	 * @param string $line 
+	 * @param string $code
+	 * @param string $message
+	 * @param string $file
+	 * @param string $line
 	 * @return void
 	 * @author Rich Cavanaugh
 	 */
@@ -135,18 +141,24 @@ class Services_Airbrake
 		if ($code == E_STRICT && $this->reportESTRICT === false) return;
 
 		$this->notify($code, $message, $file, $line, debug_backtrace());
+
+		if($this->previous_error_handler)
+			call_user_func($this->previous_error_handler, $code, $message, $file, $line);
 	}
 
 	/**
 	 * Handle a raised exception
 	 *
-	 * @param Exception $exception 
+	 * @param Exception $exception
 	 * @return void
 	 * @author Rich Cavanaugh
 	 */
 	public function exceptionHandler($exception)
 	{
 		$this->notify(get_class($exception), $exception->getMessage(), $exception->getFile(), $exception->getLine(), $exception->getTrace());
+
+		if($this->previous_exception_handler)
+			call_user_func($this->previous_exception_handler, $exception);
 	}
 
 	/**
