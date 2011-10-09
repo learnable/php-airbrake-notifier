@@ -300,7 +300,7 @@ class Services_Airbrake
 		$line_node->addAttribute('number', $this->line);
 
 		foreach ($this->trace as $entry) {
-			if (isset($entry['class']) && $entry['class'] == 'Services_Airbrake') continue;
+			if (isset($entry['class']) && $entry['class'] == get_class($this)) continue;
 
 			$line_node = $backtrace->addChild('line');
 			$line_node->addAttribute('file', $entry['file']);
