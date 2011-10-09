@@ -26,14 +26,6 @@ class Services_Airbrake
 	protected static $blacklist = false;
 
 	/**
-	 * Report E_STRICT
-	 *
-	 * @var bool $reportESTRICT
-	 * @todo Implement set!
-	 */
-	protected $reportESTRICT;
-
-	/**
 	 * Timeout for cUrl.
 	 * @var int $timeout
 	 */
@@ -100,17 +92,15 @@ class Services_Airbrake
 	 * @param string $apiKey
 	 * @param string $environment
 	 * @param string $client
-	 * @param string $reportESTRICT
 	 * @param int $timeout
 	 * @return void
 	 * @author Rich Cavanaugh
 	 */
-	function __construct($apiKey, $environment='production', $client='pear', $reportESTRICT=false, $timeout=2)
+	function __construct($apiKey, $environment='production', $client='pear', $timeout=2)
 	{
 		$this->apiKey = $apiKey;
 		$this->environment = $environment;
 		$this->client = $client;
-		$this->reportESTRICT = $reportESTRICT;
 		$this->timeout = $timeout;
 		$this->setup();
 	}
@@ -138,7 +128,9 @@ class Services_Airbrake
 	 */
 	public function errorHandler($code, $message, $file, $line)
 	{
-		if ($code == E_STRICT && $this->reportESTRICT === false) return;
+		$reporting_level = error_reporting();
+		if ($code == E_STRICT && ($reporting_level & E_STRICT) == E_STRICT) return;
+		if ($code == E_NOTICE && ($reporting_level & E_NOTICE) == E_NOTICE) return;
 
 		$this->notify($code, $message, $file, $line, debug_backtrace());
 
