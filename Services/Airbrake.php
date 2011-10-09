@@ -7,7 +7,7 @@
  * @author   Rich Cavanaugh <no@email>
  * @author   Till Klampaeckel <till@php.net>
  * @author   Aaron Parecki <aaron@parecki.com>
- * @license  
+ * @license
  * @version  GIT: $Id$
  * @link     http://github.com/geoloqi/php-airbrake-notifier
  */
@@ -98,7 +98,7 @@ class Services_Airbrake
 	 * @param int $timeout
 	 * @return void
 	 * @author Rich Cavanaugh
-	 */	
+	 */
 	function __construct($apiKey, $environment='production', $client='pear', $reportESTRICT=false, $timeout=2)
 	{
 		$this->apiKey = $apiKey;
@@ -155,13 +155,13 @@ class Services_Airbrake
 	* @return void
 	* @author Robert Rotarius
 	*/
-	public function fatalErrorHandler() 
+	public function fatalErrorHandler()
 	{
-		$error = error_get_last(); 
+		$error = error_get_last();
 		if($error)
 			$this->notify($error['type'], $error['message'], $error['file'], $error['line'], debug_backtrace());
 	}
-  
+
 	/**
 	 * Set the values to be used for the next notice sent to Airbrake
 	 * @return void
@@ -368,7 +368,7 @@ class Services_Airbrake
 	function environment() {
 		return $this->environment;
 	}
-	
+
 	/**
 	 * project_root
 	 * @return string
@@ -399,7 +399,7 @@ class Services_Airbrake
 			} else {
 				$query_string = '';
 			}
-		
+
 			return $protocol . '://' . $host . $path . $query_string;
 		} else {
 			if (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) {
@@ -469,7 +469,7 @@ class Services_Airbrake
 		foreach ($headers as $key => $val) {
 			$header_strings[] = "{$key}: {$val}";
 		}
-		
+
 		$curlHandle = curl_init();
 		curl_setopt($curlHandle, CURLOPT_URL,            $url);
 		curl_setopt($curlHandle, CURLOPT_POST,           1);
@@ -483,7 +483,7 @@ class Services_Airbrake
 		curl_close($curlHandle);
 		return $status;
 	}
-	
+
 	/**
 	 * Put the error on a beanstalk queue so a separate process can
 	 * send it off to Airbrake via HTTP. Requires the pheanstalk client.
