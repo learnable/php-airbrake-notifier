@@ -283,7 +283,7 @@ class Services_Airbrake
 	{
 		if (is_array($var) || is_object($var))
 			$var = trim(preg_replace("/\n */", " ", print_r($var, true)));
-		return $var;
+		return htmlspecialchars($var, ENT_NOQUOTES);
 	}
 
   /**
