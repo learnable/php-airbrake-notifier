@@ -128,9 +128,7 @@ class Services_Airbrake
 	 */
 	public function errorHandler($code, $message, $file, $line)
 	{
-		$reporting_level = error_reporting();
-		if ($code == E_STRICT && ($reporting_level & E_STRICT) == E_STRICT) return;
-		if ($code == E_NOTICE && ($reporting_level & E_NOTICE) == E_NOTICE) return;
+		if (!(error_reporting() & $code)) return;
 
 		$this->notify($code, $message, $file, $line, debug_backtrace());
 
