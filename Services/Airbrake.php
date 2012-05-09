@@ -196,7 +196,7 @@ class Services_Airbrake
 	{
 		$this->setParamsForNotify($error_class, $message, $file, $line, $trace, $component);
 
-		$url = "http://airbrakeapp.com/notifier_api/v2/notices";
+		$url = "https://airbrake.io/notifier_api/v2/notices";
 		$headers = array(
 			'Accept'				=> 'text/xml, application/xml',
 			'Content-Type'	=> 'text/xml'
