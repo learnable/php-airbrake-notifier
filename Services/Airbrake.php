@@ -235,12 +235,14 @@ class Services_Airbrake
 		$error->addChild('message', $this->message);
 		$this->addXmlBacktrace($error);
 
-		$request = $doc->addChild('request');
-		$request->addChild('url', $this->request_uri());
-		$request->addChild('component', $this->component());
-		$request->addChild('action', $this->action());
+		if (isset($_REQUEST)) {
+		  $request = $doc->addChild('request');
+		  $request->addChild('url', $this->request_uri());
+		  $request->addChild('component', $this->component());
+		  $request->addChild('action', $this->action());
+		  $this->addXmlVars($request, 'params', $this->params());
+		}
 
-		if (isset($_REQUEST)) $this->addXmlVars($request, 'params', $this->params());
 		if (isset($_SESSION)) $this->addXmlVars($request, 'session', $this->session());
 		if (isset($_SERVER)) {
 			if(isset($_SERVER['argv']))
@@ -285,7 +287,7 @@ class Services_Airbrake
 	}
 
   /**
-	 * 
+	 *
 	 * Add a Airbrake backtrace to the XML
 	 * @return void
 	 * @author Rich Cavanaugh
