@@ -96,12 +96,13 @@ class Services_Airbrake
 	 * @return void
 	 * @author Rich Cavanaugh
 	 */
-	function __construct($apiKey, $environment='production', $client='pear', $timeout=2)
+	function __construct($apiKey, $environment='production', $client='pear', $timeout=2, $sendRequestParams=true)
 	{
 		$this->apiKey = $apiKey;
 		$this->environment = $environment;
 		$this->client = $client;
 		$this->timeout = $timeout;
+		$this->sendRequestParams = $sendRequestParams;
 		$this->setup();
 	}
 
@@ -235,17 +236,19 @@ class Services_Airbrake
 		$error->addChild('message', $this->message);
 		$this->addXmlBacktrace($error);
 
-		$request = $doc->addChild('request');
-		$request->addChild('url', $this->request_uri());
-		$request->addChild('component', $this->component());
-		$request->addChild('action', $this->action());
+		if ($this->sendRequestParams) {
+		  $request = $doc->addChild('request');
+		  $request->addChild('url', $this->request_uri());
+		  $request->addChild('component', $this->component());
+		  $request->addChild('action', $this->action());
 
-		if (isset($_REQUEST)) $this->addXmlVars($request, 'params', $this->params());
-		if (isset($_SESSION)) $this->addXmlVars($request, 'session', $this->session());
-		if (isset($_SERVER)) {
-			if(isset($_SERVER['argv']))
-				unset($_SERVER['argv']);
-			$this->addXmlVars($request, 'cgi-data', $this->cgi_data());
+		  if (isset($_REQUEST)) $this->addXmlVars($request, 'params', $this->params());
+		  if (isset($_SESSION)) $this->addXmlVars($request, 'session', $this->session());
+		  if (isset($_SERVER)) {
+		    if(isset($_SERVER['argv']))
+		      unset($_SERVER['argv']);
+		    $this->addXmlVars($request, 'cgi-data', $this->cgi_data());
+		  }
 		}
 
 		$env = $doc->addChild('server-environment');
