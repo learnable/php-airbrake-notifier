@@ -43,6 +43,8 @@ class Services_Airbrake
 	 **/
 	public $environment;
 
+  protected $sendRequestParams;
+
 	/**
 	 * @vars object previous error handlers
 	 **/
@@ -56,9 +58,9 @@ class Services_Airbrake
 	 * @return void
 	 * @author Rich Cavanaugh
 	 */
-	public static function installHandlers($apiKey=NULL, $environment=NULL, $client=NULL, $class='Services_Airbrake')
+	public static function installHandlers($apiKey=NULL, $environment=NULL, $client=NULL, $sendRequestParams=true, $class='Services_Airbrake')
 	{
-		$airbrake = new $class($apiKey, $environment, $client);
+		$airbrake = new $class($apiKey, $environment, $client, $sendRequestParams);
 		$airbrake->installNotifierHandlers();
 	}
 
@@ -96,7 +98,7 @@ class Services_Airbrake
 	 * @return void
 	 * @author Rich Cavanaugh
 	 */
-	function __construct($apiKey, $environment='production', $client='pear', $timeout=2, $sendRequestParams=true)
+	function __construct($apiKey, $environment='production', $client='pear', $sendRequestParams=true, $timeout=2)
 	{
 		$this->apiKey = $apiKey;
 		$this->environment = $environment;
